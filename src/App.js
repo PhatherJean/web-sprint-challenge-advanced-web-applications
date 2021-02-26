@@ -9,8 +9,8 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Route path="/colors" component={BubblePage} />
         <Route exact path="/" component={Login} />
+        <PrivateRoute path="/colors" component={BubblePage} />
       </div>
     </Router>
   );

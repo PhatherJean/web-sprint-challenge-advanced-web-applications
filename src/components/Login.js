@@ -4,28 +4,38 @@ import axios from "axios";
 import useFormsHook from "../helpers/useFormsHook";
 
 const initialValue = {
-  username: "Lambda School",
-  password: "i<3Lambd4",
+  username: "",
+  password: "",
 };
 
 const Login = () => {
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
-  const { push } = useHistory();
+  const history = useHistory();
   const login = (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:5000/api/login", values)
-      .then((res) => {
-        localStorage.setItem("token", res.data.payload);
-        push("/colors");
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  };
 
-  const [values, handleChange] = useFormsHook(initialValue);
+    if (
+      values.username !== "Lambda School" ||
+      values.password !== "i<3Lambd4"
+    ) {
+      setError("Username or Password not valid");
+      setValues(initialValue);
+    } else {
+      return axios
+        .post("http://localhost:5000/api/login", values)
+        .then((res) => {
+          localStorage.setItem("token", res.data.payload);
+          history.push("/colors");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const [values, setValues, error, setError, handleChange] = useFormsHook(
+    initialValue
+  );
   return (
     <>
       <h1>Welcome to the Bubble App!</h1>
@@ -44,6 +54,7 @@ const Login = () => {
           value={values.password}
           onChange={handleChange}
         />
+        <p>{error}</p>
         <button>Submit</button>
       </form>
     </>
