@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import BubblePage from "./components/BubblePage";
 
 import Login from "./components/Login";
 import "./styles.scss";
@@ -9,6 +10,7 @@ function App() {
     <Router>
       <div className="App">
         <Route exact path="/" component={Login} />
+        <Route path="/colors" component={BubblePage} />
       </div>
     </Router>
   );
