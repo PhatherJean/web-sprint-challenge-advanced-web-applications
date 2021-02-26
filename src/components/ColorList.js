@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+import EditMenu from "./EditMenu";
+import { axiosWithAuth } from "../helpers/axiosWithAuth";
 
 const initialColor = {
   color: "",
@@ -9,6 +11,7 @@ const initialColor = {
 const ColorList = ({ colors, updateColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  const { push } = useHistory();
 
   const editColor = (color) => {
     setEditing(true);
@@ -17,10 +20,34 @@ const ColorList = ({ colors, updateColors }) => {
 
   const saveEdit = (e) => {
     e.preventDefault();
+    axiosWithAuth()
+      .post("/api/colors", colorToEdit)
+      .then((res) => {
+        setEditing(false);
+        updateColors(res.data);
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
   };
 
-  const deleteColor = (color) => {};
-
+  const deleteColor = (color) => {
+    axiosWithAuth()
+      .delete(`/api/colors/${color.id}`)
+      .then((res) => {
+        console.log(res.data);
+        updateColors(
+          colors.filter((color) => {
+            return color.id !== parseInt(res.data);
+          })
+        );
+        push("/colors");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  console.log("bottom", colors);
   return (
     <div className="colors-wrap">
       <p>colors</p>
@@ -46,7 +73,14 @@ const ColorList = ({ colors, updateColors }) => {
           </li>
         ))}
       </ul>
-      {/* { editing && <EditMenu colorToEdit={colorToEdit} saveEdit={saveEdit} setColorToEdit={setColorToEdit} setEditing={setEditing}/> } */}
+      {editing && (
+        <EditMenu
+          colorToEdit={colorToEdit}
+          saveEdit={saveEdit}
+          setColorToEdit={setColorToEdit}
+          setEditing={setEditing}
+        />
+      )}
     </div>
   );
 };
